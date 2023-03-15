@@ -60,17 +60,44 @@ public class UsersDaoImp implements UsersDao{
 
     @Override
     public int save(UsersDto user) throws Exception {
-        return 0;
+        int save=0;
+        String sql="INSERT INTO users (u_id, pw, name, phone, img_path, email, birth, gender, address, detail_address) VALUE (?,?,?,?,?,?,?,?,?,?)";
+        pstmt=conn.prepareStatement(sql);
+        pstmt.setString(1,user.getUId());
+        pstmt.setString(2,user.getPw());
+        pstmt.setString(3,user.getName());
+        pstmt.setString(4,user.getPhone());
+        pstmt.setString(5,user.getImgPath());
+        pstmt.setString(6,user.getEmail());
+        pstmt.setString(7,user.getBirth());
+        pstmt.setString(8,user.getGender());
+        pstmt.setString(9,user.getAddress());
+        pstmt.setString(10,user.getDetailAddress());
+        save=pstmt.executeUpdate();
+        return save;
     }
 
     @Override
     public int updatePermissionByUIdAndPw(UsersDto user) throws Exception {
-        return 0;
+        int update=0;
+        String sql="UPDATE users SET permission=? WHERE u_id=? AND pw=?";
+        pstmt=conn.prepareStatement(sql);
+        pstmt.setString(1,user.getPermission());
+        pstmt.setString(2,user.getUId());
+        pstmt.setString(3,user.getPw());
+        update=pstmt.executeUpdate(); //dml, executeQuery dql
+        return update;
     }
 
     @Override
     public int deleteByUIdAndPw(String uId, String pw) throws Exception {
-        return 0;
+        int delete=0;
+        String sql="DELETE FROM users WHERE u_id=? AND pw=?";
+        pstmt=conn.prepareStatement(sql);
+        pstmt.setString(1,uId);
+        pstmt.setString(2,pw);
+        delete=pstmt.executeUpdate();
+        return delete;
     }
     public UsersDto parseUserDto(ResultSet rs) throws SQLException {
         UsersDto user=new UsersDto();
