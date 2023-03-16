@@ -12,9 +12,7 @@ public class UsersServiceImp implements UsersService{
     private Connection conn;
     private UsersDao usersDao;
 
-    //트랜잭션 : 친구한테 계좌 송금(서비스) ~ 내계좌업데이트 4000->3000,은행기록등록 (실패),친구계좌 업데이트 (dao)
-
-    public UsersServiceImp(UsersDao usersDao) throws Exception {
+    public UsersServiceImp() throws Exception {
         conn= WebAppBoardConn.getConn();
         this.usersDao = new UsersDaoImp(conn);
     }
@@ -39,22 +37,17 @@ public class UsersServiceImp implements UsersService{
         int modify=0;
         modify=usersDao.updateByPk(user);
         return modify;
-    }//11분까지 쉬었다가 올께요~
-    //서비스 개념의 이해~
-
+    }
     @Override
     public int register(UsersDto user) throws Exception {
-
         return usersDao.save(user);
     }
-
     @Override
     public int closeAccount(UsersDto user) throws Exception {
-        return 0;
+        return usersDao.updatePermissionByUIdAndPw(user);
     }
-
     @Override
     public int dropOut(String uId, String pw) throws Exception {
-        return 0;
+        return usersDao.deleteByUIdAndPw(uId,pw);
     }
 }

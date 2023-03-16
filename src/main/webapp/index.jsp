@@ -1,3 +1,4 @@
+<%@ page import="com.acorn.webappboard.dto.UsersDto" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -5,12 +6,23 @@
     <title>JSP - Hello World</title>
 </head>
 <body>
+    <p>
+        <% //doGet(request,response)
+           //PrintWriter out=response.getWriter()
+           //HttpSession session=req.getSession()
+           //....
+           Object loginUser_obj = session.getAttribute("loginUser");
+           UsersDto loginUser=(loginUser_obj!=null)?(UsersDto)loginUser_obj:null;
+           //null을 캐스팅 형변환하면 오류!
+        %>
+        <%=loginUser%>
+    </p>
     <h1>Web App 과 Web App Server </h1>
     <h2>동적 리소스 네비게이션</h2>
     <ul>
         <li><a href="./model1/boardList.do">model1 boards 리스트</a></li>
-        <li><a href=""></a></li>
-        <li><a href=""></a></li>
+        <li><a href="./model1/boardInsert.do">model1 boards 등록</a></li>
+        <li><a href="./users/login.do">model2 users 로그인 폼</a></li>
         <li><a href=""></a></li>
         <li><a href=""></a></li>
     </ul>
