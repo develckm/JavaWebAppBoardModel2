@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface BoardsDao {
     List<BoardsDto> findAll() throws Exception;
-
     //List<BoardsDto> findBySearchAngPaging(PageVo) throws Exception;
     BoardsDto findByBId(int bId) throws Exception;
     int save(BoardsDto board) throws Exception;
