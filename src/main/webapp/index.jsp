@@ -6,17 +6,7 @@
     <title>JSP - Hello World</title>
 </head>
 <body>
-    <p>
-        <% //doGet(request,response)
-           //PrintWriter out=response.getWriter()
-           //HttpSession session=req.getSession()
-           //....
-           Object loginUser_obj = session.getAttribute("loginUser");
-           UsersDto loginUser=(loginUser_obj!=null)?(UsersDto)loginUser_obj:null;
-           //null을 캐스팅 형변환하면 오류!
-        %>
-        <%=loginUser%>
-    </p>
+    <%@include file="/templates/headerNav.jsp"%>
     <h1>Web App 과 Web App Server </h1>
     <h2>동적 리소스 네비게이션</h2>
     <ul>
