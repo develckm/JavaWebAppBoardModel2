@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @WebServlet("/users/update.do")
 public class UsersUpdateController extends HttpServlet {
@@ -43,6 +45,10 @@ public class UsersUpdateController extends HttpServlet {
         String gender=req.getParameter("gender");
         String address=req.getParameter("address");
         String detailAddress=req.getParameter("detail_address");
+        String birth=req.getParameter("birth");
+        //SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        //Date birthDate=sdf.parse(birth);
+        user.setBirth(birth);
         user.setUId(uId);
         user.setName(name);
         user.setPw(pw);
@@ -51,7 +57,20 @@ public class UsersUpdateController extends HttpServlet {
         user.setGender(gender);
         user.setAddress(address);
         user.setDetailAddress(detailAddress);
-        resp.setContentType("text/html;charset=UTF-8");
-        resp.getWriter().println(user);
+        int update=0;
+        try {
+            UsersService usersService=new UsersServiceImp();
+            update=usersService.modify(user);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(update>0){
+            resp.sendRedirect(req.getContextPath()+"/users/detail.do?u_id="+uId);
+        }else{
+            resp.sendRedirect(req.getContextPath()+"/users/update.do?u_id="+uId);
+        }
     }
+    //과제!
+    //user 회원가입! + ajax (u_idCheck 구현)
+    //board crud (search+paging)
 }
