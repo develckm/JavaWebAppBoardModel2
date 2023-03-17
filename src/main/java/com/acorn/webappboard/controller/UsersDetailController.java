@@ -28,6 +28,7 @@ public class UsersDetailController extends HttpServlet {
             //resp.sendError(500,"db 처리 오류!");
             e.printStackTrace();
         }
-        resp.getWriter().println(user);
+        req.setAttribute("user",user); //렌더링할 jsp user(Object) 를 전달
+        req.getRequestDispatcher("/templates/users/detail.jsp").forward(req,resp);
     }
 }
