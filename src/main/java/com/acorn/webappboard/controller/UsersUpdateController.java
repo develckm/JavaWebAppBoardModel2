@@ -58,19 +58,30 @@ public class UsersUpdateController extends HttpServlet {
         user.setAddress(address);
         user.setDetailAddress(detailAddress);
         int update=0;
+        String errorMsg=null;
+        String modalMsg="";
+        String redirectPage="";
         try {
             UsersService usersService=new UsersServiceImp();
             update=usersService.modify(user);
         }catch (Exception e){
-            e.printStackTrace();
+            e.printStackTrace();//콘솔 빨간 로그+리소스의 위치포함
+            errorMsg=e.getMessage();//심플한 오류 내역!(오류 발생시 모달에 사용!)
         }
         if(update>0){
-            resp.sendRedirect(req.getContextPath()+"/users/detail.do?u_id="+uId);
+            modalMsg="수정 성공";
+            redirectPage=(req.getContextPath()+"/users/detail.do?u_id="+uId);
         }else{
-            resp.sendRedirect(req.getContextPath()+"/users/update.do?u_id="+uId);
+            modalMsg="수정 실패 : ";
+            if(errorMsg!=null){
+                modalMsg+=errorMsg;
+                redirectPage=(req.getContextPath()+"/users/update.do?u_id="+uId);
+            }else{ //해당레코드를 수정하려하는데 이미 삭제되었을 때
+                modalMsg+="해당 레코드가 없습니다.";
+                redirectPage=(req.getContextPath()+"/");
+            }
         }
+        req.getSession().setAttribute("actionMsg",modalMsg);
+        resp.sendRedirect(redirectPage);
     }
-    //과제!
-    //user 회원가입! + ajax (u_idCheck 구현)
-    //board crud (search+paging)
 }

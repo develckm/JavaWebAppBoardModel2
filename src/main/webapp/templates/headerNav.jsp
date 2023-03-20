@@ -52,3 +52,40 @@ String contextPath=request.getContextPath();
         </div>
     </div>
 </nav>
+<%--
+    html+java 주석
+    redirect 되는 페이지에 파라미터 전달
+    1.쿼리스트링으로 전달 ?actionMsg=등록성공 :보안+인터페이스 권장하지 않는다!
+    2.세션객체로 전달하고 바로 삭제  : 권장! (현재)
+    3.세션객체로 전달하고 바로 삭제하는 라이브러리 사용 : 매우권장!
+    (톰캣 X, express.js: connect-flash, spring : redirectAttribute)
+--%>
+<%
+//1. String actionMsg=request.getParameter("actionMsg");
+    Object actionMsg=session.getAttribute("actionMsg");
+    session.removeAttribute("actionMsg");
+    //11.분까지 쉬고 유저 삭제인 탈퇴를 구현하세요~ actionMsg 까지 구현!
+%>
+<%if(actionMsg!=null){%>
+<!-- 액션페이지(등록,수정,삭제) 메세지 모달 -->
+<div class="modal fade" id="actionMsgModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">액션 메세지</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <%=actionMsg%>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const actionModal=new bootstrap.Modal(document.getElementById("actionMsgModal"),{})
+    actionModal.show();
+</script>
+<%}%>
