@@ -61,10 +61,10 @@ String contextPath=request.getContextPath();
     (톰캣 X, express.js: connect-flash, spring : redirectAttribute)
 --%>
 <%
-//1. String actionMsg=request.getParameter("actionMsg");
+    //1. String actionMsg=request.getParameter("actionMsg");
     Object actionMsg=session.getAttribute("actionMsg");
     session.removeAttribute("actionMsg");
-    //11.분까지 쉬고 유저 삭제인 탈퇴를 구현하세요~ actionMsg 까지 구현!
+
 %>
 <%if(actionMsg!=null){%>
 <!-- 액션페이지(등록,수정,삭제) 메세지 모달 -->
