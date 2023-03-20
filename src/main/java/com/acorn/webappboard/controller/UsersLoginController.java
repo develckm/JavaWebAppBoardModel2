@@ -1,15 +1,13 @@
 package com.acorn.webappboard.controller;
 
 import com.acorn.webappboard.dto.UsersDto;
+import com.acorn.webappboard.lib.AESEncryption;
 import com.acorn.webappboard.service.UsersService;
 import com.acorn.webappboard.service.UsersServiceImp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
 
 @WebServlet("/users/login.do")
@@ -35,6 +33,7 @@ public class UsersLoginController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         String uId=req.getParameter("u_id");
         String pw=req.getParameter("pw");
+        String autoLogin=req.getParameter("autoLogin");
         UsersDto loginUser=null;
         try {
             UsersService usersService=new UsersServiceImp();
@@ -46,7 +45,29 @@ public class UsersLoginController extends HttpServlet {
         //http Session : 인증같은 서비스를 위해 서버에 저장하는 객체 (쿠키로 클라이언트 아이디[JSESSIONID]와 만료시간(30분)을 지정)
         //요청이 들어온 클라이언트와 대응되는 session 이 있다면 요청정보에 담아준다.(없으면 새로 만들어 담아준다.)
         HttpSession session=req.getSession(); //session 의 타입은 Map 과 동일
-        session.setAttribute("loginUser",loginUser);
-        resp.sendRedirect(req.getContextPath()); // index.jsp 를 root 경로로 지정해 놓았다
+        if(loginUser!=null){
+            if(autoLogin!=null && autoLogin.equals("1")){ //자동로그인용 쿠키 생성
+                try {
+                    String encryptedId= AESEncryption.encryptValue(loginUser.getUId());
+                    String encryptedPw= AESEncryption.encryptValue(loginUser.getPw());
+                    Cookie idCookie=new Cookie("AUTOLOGIN_UID",encryptedId);
+                    Cookie pwCookie=new Cookie("AUTOLOGIN_PW",encryptedPw);
+                    idCookie.setMaxAge(7*24*60*60);
+                    pwCookie.setMaxAge(7*24*60*60);
+                    idCookie.setPath(req.getContextPath());
+                    pwCookie.setPath(req.getContextPath());
+                    resp.addCookie(idCookie);
+                    resp.addCookie(pwCookie);
+                } catch (Exception e) {
+                    session.setAttribute("actionMsg","일주일간 자동 로그인 실패 "+e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            session.setAttribute("loginUser",loginUser);
+            resp.sendRedirect(req.getContextPath()); // index.jsp 를 root 경로로 지정해 놓았다
+        }else {
+            session.setAttribute("actionMsg","아이디와 패스워드를 확인하세요!");
+            resp.sendRedirect(req.getContextPath()+"/users/login.do");
+        }
     }
 }
