@@ -31,7 +31,6 @@ public class UsersDeleteController extends HttpServlet {
             resp.sendRedirect(req.getContextPath());
         }
     }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uId=req.getParameter("u_id");
@@ -60,3 +59,23 @@ public class UsersDeleteController extends HttpServlet {
         resp.sendRedirect(redirectPage);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
