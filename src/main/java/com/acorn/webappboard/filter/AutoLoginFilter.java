@@ -24,9 +24,10 @@ public class AutoLoginFilter implements Filter {
         Cookie loginPw=null;
         String path=req.getRequestURI();
         // localhost:3306/webAppBoard/users/login.do(url) =>/webAppBoard(?)/users/login.do (uri)
+        System.out.println("AutoLoginFilter.doFilter uri:"+path);
 
-        //로그인이 되어 있거나,login.do,logout.do(에서 다른페이지로 이동 중) 페이지에서 자동로그인 제외
-        if((isLogout!=null && (Boolean)isLogout) || session.getAttribute("loginUser")!=null || path.endsWith("/login.do") || path.endsWith("/logout.do")){
+        //로그인이 되어 있거나,login.do,logout.do 페이지에서 자동로그인 제외
+        if(session.getAttribute("loginUser")!=null || path.endsWith("/login.do") || path.endsWith("/logout.do")){
             chain.doFilter(request,response);
             return;
         }
@@ -69,3 +70,10 @@ public class AutoLoginFilter implements Filter {
         chain.doFilter(request,response);
     }
 }
+
+
+
+
+
+
+

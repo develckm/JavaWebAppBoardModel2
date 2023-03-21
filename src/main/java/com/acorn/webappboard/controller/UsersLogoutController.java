@@ -23,14 +23,17 @@ public class UsersLogoutController extends HttpServlet {
         System.out.println(loginId.getValue()+"/"+loginPw.getValue());
         if(loginId!=null){
             loginId.setMaxAge(0);
+            loginId.setPath(req.getContextPath());
             resp.addCookie(loginId);
         }
         if(loginPw!=null) {
             loginPw.setMaxAge(0);
+            loginPw.setPath(req.getContextPath());
             resp.addCookie(loginPw);
         }
         session.removeAttribute("loginUser");
-        session.setAttribute("isLogout",true);
         resp.sendRedirect(req.getContextPath()+"/"); //sendRedirect 되면서 쿠키가 브라우저에 넘어가지 않음
     }
 }
+
+
