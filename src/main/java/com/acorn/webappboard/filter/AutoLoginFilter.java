@@ -19,8 +19,18 @@ public class AutoLoginFilter implements Filter {
         HttpServletRequest req=(HttpServletRequest) request;
         HttpServletResponse resp=(HttpServletResponse) response;
         HttpSession session=req.getSession();
+        Object isLogout=session.getAttribute("isLogout");
         Cookie loginId=null;
         Cookie loginPw=null;
+        String path=req.getRequestURI();
+        // localhost:3306/webAppBoard/users/login.do(url) =>/webAppBoard(?)/users/login.do (uri)
+
+        //로그인이 되어 있거나,login.do,logout.do(에서 다른페이지로 이동 중) 페이지에서 자동로그인 제외
+        if((isLogout!=null && (Boolean)isLogout) || session.getAttribute("loginUser")!=null || path.endsWith("/login.do") || path.endsWith("/logout.do")){
+            chain.doFilter(request,response);
+            return;
+        }
+
         Cookie [] cookies=req.getCookies(); //요청에 넘어온 모든 쿠키들
         for(Cookie c : cookies){
             if("LOGIN_ID".equals(c.getName())){
@@ -30,11 +40,30 @@ public class AutoLoginFilter implements Filter {
             }
         }
         if(loginId!=null && loginPw!=null){
+            String modalMsg="";
+            String erroMsg=null;
+            UsersDto loginUser=null;
             try {
-                UsersDto loginUser=new UsersServiceImp().login(loginId.getValue(),loginPw.getValue());
-                session.setAttribute("loginUser",loginUser);
+                loginUser=new UsersServiceImp().login(loginId.getValue(),loginPw.getValue());
             }catch (Exception e){
                 e.printStackTrace();
+                erroMsg=e.getMessage();
+            }
+            if (loginUser!=null){
+                session.setAttribute("loginUser",loginUser);
+                session.setAttribute("actionMsg","자동로그인 성공");
+            }else{//db오류(다시시도), id와 pw가 바껴서 조회가 안될때(쿠키 삭제 및 로그인 페이지로 이동)
+                if(erroMsg!=null){
+                    session.setAttribute("actionMsg","자동로그인 오류 :"+erroMsg);
+                }else{
+                    session.setAttribute("actionMsg","자동로그인 실패 아이디와 비밀번호를 확인하세요.");
+                    loginId.setMaxAge(0);
+                    loginPw.setMaxAge(0);
+                    resp.addCookie(loginId);
+                    resp.addCookie(loginPw);
+                    resp.sendRedirect(req.getContextPath()+"/users/login.do");
+                    return;
+                }
             }
         }
         chain.doFilter(request,response);
