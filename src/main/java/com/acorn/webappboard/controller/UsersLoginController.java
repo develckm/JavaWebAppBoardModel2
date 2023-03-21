@@ -6,10 +6,7 @@ import com.acorn.webappboard.service.UsersServiceImp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
 
 @WebServlet("/users/login.do")
@@ -35,18 +32,45 @@ public class UsersLoginController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         String uId=req.getParameter("u_id");
         String pw=req.getParameter("pw");
+        String autoLogin=req.getParameter("auto_login");
+        String modalMsg="";
+        String errorMsg=null;
         UsersDto loginUser=null;
         try {
             UsersService usersService=new UsersServiceImp();
             loginUser=usersService.login(uId,pw);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.getMessage();
+            errorMsg=e.getMessage();
         }
-        //resp.getWriter().println(loginUser);
-        //http Session : 인증같은 서비스를 위해 서버에 저장하는 객체 (쿠키로 클라이언트 아이디[JSESSIONID]와 만료시간(30분)을 지정)
-        //요청이 들어온 클라이언트와 대응되는 session 이 있다면 요청정보에 담아준다.(없으면 새로 만들어 담아준다.)
-        HttpSession session=req.getSession(); //session 의 타입은 Map 과 동일
-        session.setAttribute("loginUser",loginUser);
-        resp.sendRedirect(req.getContextPath()); // index.jsp 를 root 경로로 지정해 놓았다
+        HttpSession session=req.getSession();
+        if(loginUser!=null){
+            if(autoLogin!=null && autoLogin.equals("1")){
+                //쿠키로 자동 로그인 구현 (login.do,loginout.do 를 제외한 모든 요청에서 id와pw 쿠키가 있으면 자동으로 로그인 시도)
+                //LOGIN_ID,LOGIN_PW
+                Cookie loginId=new Cookie("LOGIN_ID",loginUser.getUId());
+                Cookie loginPw=new Cookie("LOGIN_PW",loginUser.getPw());
+                //쿠키 만료시간과 쿠키가 유요한 url을 지정(쿠키를 만든 url default)
+                loginId.setPath(req.getContextPath());
+                loginPw.setPath(req.getContextPath());
+                loginId.setMaxAge(7*24*60*60);
+                loginPw.setMaxAge(7*24*60*60);
+                resp.addCookie(loginId);
+                resp.addCookie(loginPw);
+                modalMsg="자동 ";
+            }
+            modalMsg+="로그인 성공";
+            session.setAttribute("actionMsg",modalMsg);
+            session.setAttribute("loginUser",loginUser);
+            resp.sendRedirect(req.getContextPath());
+        }else{ //로그인 실패 : db오류, pw나 id 가 잘못된것
+            if(errorMsg!=null) {
+                modalMsg="db 오류 다시 시도 : "+errorMsg;
+            }else{
+                modalMsg="아이디나 비밀번호를 확인하세요!";
+            }
+            session.setAttribute("actionMsg",modalMsg);
+            resp.sendRedirect(req.getContextPath()+"/users/login.do");
+        }
     }
 }

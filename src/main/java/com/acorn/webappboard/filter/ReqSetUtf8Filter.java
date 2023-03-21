@@ -8,14 +8,6 @@ public class ReqSetUtf8Filter implements Filter {
 
     //app.ase("*",(req,res,next)=>{}) :express 미들웨어 ( 특정 요청 전에 )
     //Filter doFilter(req,res,chain) : 특정 요청 전에 처리하는 미들웨어(필터)
-    //쿠키 + 쿠키 자동로그인(쿠키 암호화) + 회원가입
-    //수요일 + board crud => 제출 (시험 점수)=>spring
-    //목요일 스프링~ (Mybatis,JPA(==sequelize))
-
-    //2 : 40 - 3 : 20  2조
-    //3 : 30 - 4 : 10  1조
-    //4 : 20 - 4 : 45  2조
-    //3 : 05 - 5 : 40  1조
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
