@@ -1,6 +1,7 @@
 package com.acorn.webappboard.filter;
 
 import com.acorn.webappboard.dto.UsersDto;
+import com.acorn.webappboard.lib.AESEncryption;
 import com.acorn.webappboard.service.UsersServiceImp;
 
 import javax.servlet.*;
@@ -45,7 +46,10 @@ public class AutoLoginFilter implements Filter {
             String erroMsg=null;
             UsersDto loginUser=null;
             try {
-                loginUser=new UsersServiceImp().login(loginId.getValue(),loginPw.getValue());
+                String uId= AESEncryption.decryptValue(loginId.getValue());
+                String pw= AESEncryption.decryptValue(loginPw.getValue());
+                loginUser=new UsersServiceImp().login(uId,pw);
+                //8분까지 쉬었다가 오겠습니다.
             }catch (Exception e){
                 e.printStackTrace();
                 erroMsg=e.getMessage();

@@ -20,7 +20,6 @@ public class UsersLogoutController extends HttpServlet {
               case "LOGIN_PW": loginPw=c; break;
           }
         }
-        System.out.println(loginId.getValue()+"/"+loginPw.getValue());
         if(loginId!=null){
             loginId.setMaxAge(0);
             loginId.setPath(req.getContextPath());

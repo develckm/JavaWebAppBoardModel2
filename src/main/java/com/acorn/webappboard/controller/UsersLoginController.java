@@ -1,6 +1,7 @@
 package com.acorn.webappboard.controller;
 
 import com.acorn.webappboard.dto.UsersDto;
+import com.acorn.webappboard.lib.AESEncryption;
 import com.acorn.webappboard.service.UsersService;
 import com.acorn.webappboard.service.UsersServiceImp;
 
@@ -36,20 +37,27 @@ public class UsersLoginController extends HttpServlet {
         String modalMsg="";
         String errorMsg=null;
         UsersDto loginUser=null;
+        String encrypUid=null;
+        String encrypPw=null;
+
         try {
             UsersService usersService=new UsersServiceImp();
             loginUser=usersService.login(uId,pw);
+            if(loginUser!=null && autoLogin!=null && autoLogin.equals("1")){
+                encrypUid=AESEncryption.encryptValue(loginUser.getUId());
+                encrypPw=AESEncryption.encryptValue(loginUser.getPw());
+            }
         } catch (Exception e) {
             e.getMessage();
             errorMsg=e.getMessage();
         }
         HttpSession session=req.getSession();
         if(loginUser!=null){
-            if(autoLogin!=null && autoLogin.equals("1")){
+            if(encrypUid!=null && encrypPw!=null){
                 //쿠키로 자동 로그인 구현 (login.do,loginout.do 를 제외한 모든 요청에서 id와pw 쿠키가 있으면 자동으로 로그인 시도)
                 //LOGIN_ID,LOGIN_PW
-                Cookie loginId=new Cookie("LOGIN_ID",loginUser.getUId());
-                Cookie loginPw=new Cookie("LOGIN_PW",loginUser.getPw());
+                Cookie loginId=new Cookie("LOGIN_ID",encrypUid);
+                Cookie loginPw=new Cookie("LOGIN_PW",encrypPw);
                 //쿠키 만료시간과 쿠키가 유요한 url을 지정(쿠키를 만든 url default)
                 loginId.setPath(req.getContextPath());
                 loginPw.setPath(req.getContextPath());
