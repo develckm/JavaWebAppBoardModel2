@@ -67,6 +67,43 @@
             <button class="btn btn-outline-primary">회원가입</button>
         </p>
     </form>
+    <script>
+        signupForm.u_id.addEventListener("change",uIdHandler);
+        signupForm.onsubmit=async function (e){
+            e.preventDefault();
+            let uIdCheck=await uIdHandler();
+            if (!uIdCheck){
+                window.location.href=(window.location.href).split("#")[0]+"#uIdInput";
+            }else{
+                signupForm.submit();
+            }
+        } //22분까지 쉬었다가 자습하세요~
+
+        async function uIdHandler(){
+            let uId=signupForm.u_id.value;
+            let url="./idCheck.do?u_id="+uId;
+            const res=await fetch(url);
+            if(res.status==200){
+                const obj=await res.json(); //{idCheck:true/false}
+                if(obj.idCheck){//이미사용중인 아이디
+                    signupForm.u_id.classList.add("is-invalid");
+                    signupForm.u_id.nextElementSibling.innerText="사용 중인 아이디 입니다.";
+                    signupForm.u_id.nextElementSibling.classList.add("invalid-feedback");
+                    signupForm.u_id.classList.remove("is-valid");
+                    signupForm.u_id.nextElementSibling.classList.remove("valid-feedback");
+                }else{//사용 가능한 아이디
+                    signupForm.u_id.classList.add("is-valid");
+                    signupForm.u_id.nextElementSibling.innerText="사용 가능한 아이디 입니다.";
+                    signupForm.u_id.nextElementSibling.classList.add("valid-feedback")
+                    signupForm.u_id.classList.remove("is-invalid");
+                    signupForm.u_id.nextElementSibling.classList.remove("invalid-feedback");
+                    return true;
+                }
+            }else{
+                alert("오류 : "+res.status)
+            }
+        }
+    </script>
 </main>
 </body>
 </html>
