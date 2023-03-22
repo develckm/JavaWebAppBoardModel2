@@ -13,7 +13,7 @@
         <p>아이디 : <strong><%=user.getUId()%></strong></p>
         <p>이름 : <strong><%=user.getName()%></strong></p>
         <p>가입일 : <strong><%=user.getPostTime()%></strong></p>
-        <p>프로필 : <strong><%=user.getImgPath()%></strong></p>
+        <p>프로필 : <img class="img-thumbnail" style="width: 100px" src="<%=request.getContextPath()+"/"+user.getImgPath()%>"></p>
         <p>핸드폰: <strong><%=user.getPhone()%></strong></p>
         <p>이메일 : <strong><%=user.getEmail()%></strong></p>
         <p>생일 : <strong><%=user.getBirth()%></strong></p>

@@ -1,12 +1,13 @@
 package com.acorn.webappboard.controller;
 
+import com.acorn.webappboard.dto.UsersDto;
+import com.acorn.webappboard.service.UsersService;
+import com.acorn.webappboard.service.UsersServiceImp;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
+import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -19,15 +20,60 @@ public class UsersSignupController extends HttpServlet {
     }
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //8분까지
+        //이미지는 보통 웨앱에 저장하지 않는다. (strema 서버나, 서버컴퓨터의 특정경로에 저장(o))
         String path=("/Users/choegyeongmin/webAppStudy20230117/JavaWebAppBoardModel2/src/main/webapp/public/img/users");
+        //깃으로 받으면 꼭 경로를 변경해서 사용하세요~
         System.out.println("path = " + path);
         String uId=req.getParameter("u_id");
         String name=req.getParameter("name");
-        Part profileImg=req.getPart("img_path");
-        profileImg.write(path+"/"+uId+".jpeg");
-        System.out.println("name = " + name);
-        System.out.println("uId = " + uId);
-        System.out.println("profileImg.getSubmittedFileName() = " + profileImg.getSubmittedFileName());
+        String pw=req.getParameter("pw");
+        String phone=req.getParameter("phone");
+        String email=req.getParameter("email");
+        String birth=req.getParameter("birth");
+        String gender=req.getParameter("gender");
+        String address=req.getParameter("address");
+        String detailAddress=req.getParameter("detail_address");
+        String imgPath=null;
+        try {
+            String imgName=uId+"_"+System.currentTimeMillis()+".jpeg";
+            Part profileImg=req.getPart("img_path");
+            profileImg.write(path+"/"+imgName);
+            imgPath="/public/img/users/"+imgName;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        UsersDto user=new UsersDto();
+        user.setUId(uId);
+        user.setPw(pw);
+        user.setBirth(birth);
+        user.setAddress(address);
+        user.setEmail(email);
+        user.setGender(gender);
+        user.setName(name);
+        user.setPhone(phone);
+        user.setDetailAddress(detailAddress);
+        user.setImgPath(imgPath);
+        int insert=0;
+        String modalMsg="";
+        String erroMsg=null;
+        String redirectPage="";
+        HttpSession session=req.getSession();
+        try {
+            UsersService usersService=new UsersServiceImp();
+            insert=usersService.register(user);
+        }catch (Exception e){
+            e.printStackTrace();
+            erroMsg=e.getMessage();
+        }
+
+        if(insert>0){
+            modalMsg="회원가입 축하합니다. 로그인하세요!";
+            redirectPage=req.getContextPath()+"/";
+        }else{
+            modalMsg="회원가입 실패 에러: "+erroMsg;
+            redirectPage=req.getContextPath()+"/users/signup.do";
+        }
+        session.setAttribute("actionMsg",modalMsg);
+        resp.sendRedirect(redirectPage);
     }
 }
