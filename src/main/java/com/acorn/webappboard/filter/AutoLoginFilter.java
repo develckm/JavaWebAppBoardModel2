@@ -46,6 +46,8 @@ public class AutoLoginFilter implements Filter {
             String erroMsg=null;
             UsersDto loginUser=null;
             try {
+                //8yyoMrg424dA7uziEwA3jg== =>user12
+                //nBlOQbm8Gb7UG+ITuiGJ7w== =>1234
                 String uId= AESEncryption.decryptValue(loginId.getValue());
                 String pw= AESEncryption.decryptValue(loginPw.getValue());
                 loginUser=new UsersServiceImp().login(uId,pw);
