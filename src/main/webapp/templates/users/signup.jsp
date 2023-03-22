@@ -73,11 +73,12 @@
             e.preventDefault();
             let uIdCheck=await uIdHandler();
             if (!uIdCheck){
-                window.location.href=(window.location.href).split("#")[0]+"#uIdInput";
+                //window.location.href=(window.location.href).split("#")[0]+"#uIdInput";
+                window.location.href="#uIdInput";
             }else{
                 signupForm.submit();
             }
-        } //22분까지 쉬었다가 자습하세요~
+        }
 
         async function uIdHandler(){
             let uId=signupForm.u_id.value;
