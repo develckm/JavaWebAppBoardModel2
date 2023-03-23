@@ -27,13 +27,15 @@ public class AutoLoginFilter implements Filter {
         // localhost:3306/webAppBoard/users/login.do(url) =>/webAppBoard(?)/users/login.do (uri)
         System.out.println("AutoLoginFilter.doFilter uri:"+path);
 
-        //로그인이 되어 있거나,login.do,logout.do 페이지에서 자동로그인 제외
-        if(session.getAttribute("loginUser")!=null || path.endsWith("/login.do") || path.endsWith("/logout.do")){
+        Cookie [] cookies=req.getCookies(); //요청에 넘어온 모든 쿠키들
+
+        //로그인이 되어 있거나,login.do,logout.do,쿠키가 없거나 페이지에서 자동로그인 제외
+        if( cookies==null || session.getAttribute("loginUser")!=null || path.endsWith("/login.do") || path.endsWith("/logout.do")){
+
             chain.doFilter(request,response);
             return;
         }
 
-        Cookie [] cookies=req.getCookies(); //요청에 넘어온 모든 쿠키들
         for(Cookie c : cookies){
             if("LOGIN_ID".equals(c.getName())){
                 loginId=c;
